@@ -104,4 +104,7 @@ jobs:
       # Test
       - name: Run tests
         run: |
-          timeout 20m bash run.sh nographic
+          timeout --foreground -s SIGKILL 2m bash run.sh nographic > >(tee run_qemu.log) || {
+            if cat run_qemu.log | grep "init process" ; then echo "Kernel boot successfully" ; else echo "Kernel boot failed" && exit 1; fi;
+            if cat run_qemu.log | grep "Welcome debugging on Qemu Quard Star board!" ; then echo "Pass simulation" && exit 0; else echo "Failed in init process" && exit 1; fi; 
+          }
