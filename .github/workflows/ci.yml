@@ -78,6 +78,8 @@ jobs:
           # replace pkexec with sudo for ci
           sed -i 's/pkexec/sudo/g' build.sh
           bash build.sh
+          du -sh output
+          du -sh /opt
       
       # Upload asserts
       - name: Upload build asserts
