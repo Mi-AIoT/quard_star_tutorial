@@ -28,8 +28,8 @@ jobs:
       # Get prebuilt newlibc and glibc toolchain
       - name: Download and extract prebuilt toolchain
         run: |
-          apt update
-          apt install -y wget
+          sudo apt update
+          sudo apt install -y wget
           DOWNLOAD_URL_BASE=https://github.com/riscv/riscv-gnu-toolchain/releases/download/2021.08.07/
           wget $DOWNLOAD_URL_BASE/riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
           wget $DOWNLOAD_URL_BASE/riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
