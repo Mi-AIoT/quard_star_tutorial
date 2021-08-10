@@ -75,6 +75,8 @@ jobs:
       # Build all asserts
       - name: Build all
         run: |
+          # replace pkexec with sudo for ci
+          sed -i 's/pkexec/sudo/g' build.sh
           bash build.sh
       
       # Upload asserts
