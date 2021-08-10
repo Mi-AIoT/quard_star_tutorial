@@ -1,0 +1,69 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Get prebuilt newlibc and glibc toolchain
+      - name: Download and extract prebuilt toolchain
+        run: |
+          apt update
+          apt install -y wget
+          DOWNLOAD_URL_BASE=https://github.com/riscv/riscv-gnu-toolchain/releases/download/2021.08.07/
+          wget $DOWNLOAD_URL_BASE/riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          wget $DOWNLOAD_URL_BASE/riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          tar -xzf riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          mv riscv /opt/gcc-riscv64-unknown-linux-gnu
+          tar -xzf riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          mv riscv /opt/gcc-riscv64-unknown-elf
+          rm -f *.tar.gz
+          # strip binaries
+          cd /opt
+          set +e
+          for i in `find libexec bin -type f`
+          do
+          strip -s $i
+          done
+          cd -
+
+      # Build all asserts
+      - name: Build all
+        run: |
+          bash build.sh
+      
+      # Upload asserts
+      - name: Upload build asserts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          # Artifact name
+          name: build
+          # A file, directory or wildcard pattern that describes what to upload
+          path: |
+            output/
+            riscv
+      
+      # Test
+      - name: Run tests
+        run: |
+          timeout 20m bash run.sh nographic
