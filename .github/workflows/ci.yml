@@ -49,7 +49,7 @@ jobs:
           done
           cd -
           $RISCV_NEWLIBC_TOOLCHAIN/bin/riscv64-unknown-elf-gcc -v
-          $RISCV_GLIBC_TOOLCHAIN/bin/riscv64-unknown-linux-gnu -v
+          $RISCV_GLIBC_TOOLCHAIN/bin/riscv64-unknown-linux-gnu-gcc -v
 
       # Build all asserts
       - name: Build all
