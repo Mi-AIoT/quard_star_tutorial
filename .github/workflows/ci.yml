@@ -25,18 +25,35 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      # Install prerequisites
+      - name: Install prerequisites
+        run: |
+          sudo apt update
+          sudo apt install -y wget device-tree-compiler ninja-build git build-essential \
+                pkg-config zlib1g-dev libglib2.0-0 libglib2.0-dev libsdl1.2-dev libpixman-1-dev \
+                libfdt-dev autoconf automake libtool librbd-dev libaio-dev flex \
+                bison make cmake gcc python3 ninja-build vim swig python3-dev libedit-dev \
+                libncurses5-dev liblzma-dev lua5.3 liblua5.3-dev libxml2-dev doxygen graphviz
+
       # Get prebuilt newlibc and glibc toolchain
       - name: Download and extract prebuilt toolchain
         run: |
-          sudo apt update
-          sudo apt install -y wget device-tree-compiler
+          # download prebuilt toolchain
           DOWNLOAD_URL_BASE=https://github.com/riscv/riscv-gnu-toolchain/releases/download/2021.08.07/
           wget $DOWNLOAD_URL_BASE/riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
-          wget $DOWNLOAD_URL_BASE/riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
-          tar -xzf riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          # prebuilt toolchain from riscv official is not ok, due to medlow compile
+          # see The default code model, medlow, can only access addresses below 0x80000000 on a 64-bit part, 
+          # or the entire memory on a 32-bit part due to wraparound. If you want to access memory above 2GB on a 64-bit part, 
+          # you have to use the medany code model, via the -mcmodel=medany compiler option. If you are linking with libraries, 
+          # like the C library, then those libraries must also be compiled with medany. It you are building your own toolchain, 
+          # this works best if you use --with-cmodel=medany when configuring
+          #wget $DOWNLOAD_URL_BASE/riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          #tar -xzf riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
           RISCV_GLIBC_TOOLCHAIN=/opt/gcc-riscv64-unknown-linux-gnu
           RISCV_NEWLIBC_TOOLCHAIN=/opt/gcc-riscv64-unknown-elf
-          mv riscv $RISCV_GLIBC_TOOLCHAIN
+          wget https://static.dev.sifive.com/dev-tools/freedom-tools/v2020.12/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14.tar.gz
+          tar -xzf riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14.tar.gz
+          mv riscv64* $RISCV_GLIBC_TOOLCHAIN
           tar -xzf riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
           mv riscv $RISCV_NEWLIBC_TOOLCHAIN
           rm -f *.tar.gz
