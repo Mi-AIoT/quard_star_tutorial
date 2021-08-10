@@ -47,16 +47,17 @@ jobs:
           # you have to use the medany code model, via the -mcmodel=medany compiler option. If you are linking with libraries, 
           # like the C library, then those libraries must also be compiled with medany. It you are building your own toolchain, 
           # this works best if you use --with-cmodel=medany when configuring
-          #wget $DOWNLOAD_URL_BASE/riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
-          #tar -xzf riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          #wget $DOWNLOAD_URL_BASE/riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          #tar -xzf riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
           RISCV_GLIBC_TOOLCHAIN=/opt/gcc-riscv64-unknown-linux-gnu
           RISCV_NEWLIBC_TOOLCHAIN=/opt/gcc-riscv64-unknown-elf
+          # wget all prebuilt toolchain
           wget https://static.dev.sifive.com/dev-tools/freedom-tools/v2020.12/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14.tar.gz
-          wget $DOWNLOAD_URL_BASE/riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          wget $DOWNLOAD_URL_BASE/riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
           tar -xzf riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14.tar.gz
-          mv riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14 $RISCV_GLIBC_TOOLCHAIN
-          tar -xzf riscv64-elf-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
-          mv riscv $RISCV_NEWLIBC_TOOLCHAIN
+          mv riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14 $RISCV_NEWLIBC_TOOLCHAIN
+          tar -xzf riscv64-glibc-ubuntu-20.04-nightly-2021.08.07-nightly.tar.gz
+          mv riscv $RISCV_GLIBC_TOOLCHAIN
           rm -f *.tar.gz
           # strip binaries
           cd /opt
